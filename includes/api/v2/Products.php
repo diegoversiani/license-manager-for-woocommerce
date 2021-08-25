@@ -42,6 +42,27 @@ class Products extends LMFWC_REST_Controller {
      */
     public function register_routes() {
         /**
+         * GET products/update/{product_id}
+         *
+         * Retrieves update information's about a WooCommerce product e.g. a WordPress plugin
+         */
+        register_rest_route(
+            $this->namespace, $this->rest_base . '/update/(?P<product_id>[\d]+)', array(
+                array(
+                    'methods'             => WP_REST_Server::READABLE,
+                    'callback'            => array($this, 'checkProductUpdateById'),
+                    'permission_callback' => array($this, 'permissionCallback'),
+                    'args'                => array(
+                        'product_id' => array(
+                            'description' => 'License Key',
+                            'type'        => 'string',
+                        )
+                    )
+                )
+            )
+        );
+
+        /**
          * GET products/update/{license_key}
          *
          * Retrieves update information's about a WooCommerce product e.g. a WordPress plugin
@@ -82,6 +103,96 @@ class Products extends LMFWC_REST_Controller {
                 )
             )
         );
+    }
+
+    /**
+     * Callback for the GET products/update/{product_id} route. Checks if a
+     * product update is available.
+     *
+     * @param WP_REST_Request $request
+     *
+     * @return WP_REST_Response|WP_Error
+     */
+    public function checkProductUpdateById( WP_REST_Request $request ) {
+        if (!$this->isRouteEnabled($this->settings, '022')) {
+            return $this->routeDisabledError();
+        }
+
+        if (!$this->capabilityCheck('update_product')) {
+            return new WP_Error(
+                'lmfwc_rest_cannot_view',
+                __('Sorry, you cannot view this resource.', 'license-manager-for-woocommerce'),
+                array('status' => $this->authorizationRequiredCode())
+            );
+        }
+
+        $product_id = sanitize_text_field($request->get_param('product_id'));
+
+        if (!$product_id) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                'Product ID invalid.',
+                array('status' => 404)
+            );
+        }
+
+        // $productId = $license->getProductId();
+        $productId = intval( $product_id );
+
+        if (!$productId) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                'No product assigned to license.',
+                array('status' => 404)
+            );
+        }
+
+        $product             = wc_get_product($productId);
+        $productDownloads    = $product->get_downloads();
+
+        if (!empty( $productDownloads)) {
+            $productDownloadFile = ABSPATH . ltrim(wp_make_link_relative($product->get_file_download_path(lmfwc_array_key_first($productDownloads))), '/');
+
+            if (file_exists($productDownloadFile)) {
+                $lastUpdated = date('Y-m-d H:i:s', filemtime($productDownloadFile));
+            }
+        }
+
+        $consumerKey    = '';
+        $consumerSecret = '';
+
+        // If the $_GET parameters are present, use those first.
+        if (!empty($_GET['consumer_key']) && !empty($_GET['consumer_secret'])) {
+            $consumerKey    = $_GET['consumer_key'];
+            $consumerSecret = $_GET['consumer_secret'];
+        }
+
+        // If the above is not present, we will do full basic auth.
+        if (!$consumerKey && !empty($_SERVER['PHP_AUTH_USER']) && ! empty($_SERVER['PHP_AUTH_PW'])) {
+            $consumerKey    = $_SERVER['PHP_AUTH_USER'];
+            $consumerSecret = $_SERVER['PHP_AUTH_PW'];
+        }
+
+        // Add key and secret to update url
+        $packageUrl = add_query_arg(array(
+            'consumer_key'    => $consumerKey,
+            'consumer_secret' => $consumerSecret
+        ), get_rest_url() . $this->namespace . $this->rest_base . '/download/latest/{license_key}');
+
+        $updateData = array(
+            'url'          => $product->get_permalink(),
+            'new_version'  => $product->get_meta('lmfwc_licensed_product_version'),
+            'package'      => $packageUrl, // Link to download the latest update
+            'tested'       => $product->get_meta('lmfwc_licensed_product_tested'), // Testes up to WP version
+            'requires'     => $product->get_meta('lmfwc_licensed_product_requires'), // Required WP version
+            'requires_php' => $product->get_meta('lmfwc_licensed_product_requires_php'),
+            'last_updated' => isset($lastUpdated) ? $lastUpdated : '',
+            'sections'     => array(
+                'changelog' => preg_replace("/\r\n|\r|\n/", '', wpautop($product->get_meta('lmfwc_licensed_product_changelog')))
+            )
+        );
+
+        return $this->response( true, $updateData, 200, 'v2/products/update/{product_id}' );
     }
 
     /**
