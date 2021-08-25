@@ -198,7 +198,7 @@ class Products extends LMFWC_REST_Controller {
             )
         );
 
-        return $this->response( true, $updateData, 'v2/products/update/{license_key}' );
+        return $this->response( true, $updateData, 200, 'v2/products/update/{license_key}' );
     }
 
     /**
@@ -270,7 +270,7 @@ class Products extends LMFWC_REST_Controller {
 
         $product = wc_get_product($license->getProductId());
 
-        if ($product) {
+        if ( ! $product) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
                 'The assigned product could not be found.',
@@ -306,6 +306,6 @@ class Products extends LMFWC_REST_Controller {
             'content-length' => filesize($productDownloadFile)
         );
 
-        return $this->response( true, $fileDetailsData, 'v2/products/download/latest/{license_key}' );
+        return $this->response( true, $fileDetailsData, 200, 'v2/products/download/latest/{license_key}' );
     }
 }
