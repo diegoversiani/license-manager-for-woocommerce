@@ -82,19 +82,22 @@ class ProductData
         global $post;
 
         /** @var GeneratorResourceModel[] $generators */
-        $generators         = GeneratorResourceRepository::instance()->findAll();
-        $licensed           = get_post_meta( $post->ID, 'lmfwc_licensed_product', true );
-        $deliveredQuantity  = get_post_meta( $post->ID, 'lmfwc_licensed_product_delivered_quantity', true );
-        $generatorId        = get_post_meta( $post->ID, 'lmfwc_licensed_product_assigned_generator', true );
-        $useGenerator       = get_post_meta( $post->ID, 'lmfwc_licensed_product_use_generator', true );
-        $useStock           = get_post_meta( $post->ID, 'lmfwc_licensed_product_use_stock', true );
-        $productVersion     = get_post_meta( $post->ID, 'lmfwc_licensed_product_version', true );
-        $productTested      = get_post_meta( $post->ID, 'lmfwc_licensed_product_tested', true );
-        $productRequires    = get_post_meta( $post->ID, 'lmfwc_licensed_product_requires', true );
-        $productRequiresPhp = get_post_meta( $post->ID, 'lmfwc_licensed_product_requires_php', true );
-        $productChangelog   = get_post_meta( $post->ID, 'lmfwc_licensed_product_changelog', true );
-        $generatorOptions   = array( '' => __( 'Please select a generator', 'license-manager-for-woocommerce' ) );
-        $licenseStockCount  = LicenseResourceRepository::instance()->countBy(
+        $generators           = GeneratorResourceRepository::instance()->findAll();
+        $licensed             = get_post_meta( $post->ID, 'lmfwc_licensed_product', true );
+        $deliveredQuantity    = get_post_meta( $post->ID, 'lmfwc_licensed_product_delivered_quantity', true );
+        $generatorId          = get_post_meta( $post->ID, 'lmfwc_licensed_product_assigned_generator', true );
+        $useGenerator         = get_post_meta( $post->ID, 'lmfwc_licensed_product_use_generator', true );
+        $useStock             = get_post_meta( $post->ID, 'lmfwc_licensed_product_use_stock', true );
+        $productVersion       = get_post_meta( $post->ID, 'lmfwc_licensed_product_version', true );
+        $productTested        = get_post_meta( $post->ID, 'lmfwc_licensed_product_tested', true );
+        $productRequires      = get_post_meta( $post->ID, 'lmfwc_licensed_product_requires', true );
+        $productRequiresPhp   = get_post_meta( $post->ID, 'lmfwc_licensed_product_requires_php', true );
+        $productChangelog     = get_post_meta( $post->ID, 'lmfwc_licensed_product_changelog', true );
+        $productIconUrl       = get_post_meta( $post->ID, 'lmfwc_licensed_product_icon_url', true );
+        $productBannerLowUrl  = get_post_meta( $post->ID, 'lmfwc_licensed_product_banner_low_url', true );
+        $productBannerHighUrl = get_post_meta( $post->ID, 'lmfwc_licensed_product_banner_high_url', true );
+        $generatorOptions     = array( '' => __( 'Please select a generator', 'license-manager-for-woocommerce' ) );
+        $licenseStockCount    = LicenseResourceRepository::instance()->countBy(
             array(
                 'product_id' => $post->ID,
                 'status' => LicenseStatus::ACTIVE
@@ -235,6 +238,37 @@ class ProductData
                     'desc_tip'    => true
                 )
             );
+
+            woocommerce_wp_text_input(
+                array(
+                    'id'          => 'lmfwc_licensed_product_icon_url',
+                    'label'       => esc_html__( 'Product icon', 'license-manager-for-woocommerce' ),
+                    'description' => esc_html__( 'URL to the image used as the product icon within WordPress Admin.', 'license-manager-for-woocommerce' ),
+                    'value'       => $productIconUrl,
+                    'desc_tip'    => true
+                )
+            );
+
+            woocommerce_wp_text_input(
+                array(
+                    'id'          => 'lmfwc_licensed_product_banner_low_url',
+                    'label'       => esc_html__( 'Product banner (low resolution)', 'license-manager-for-woocommerce' ),
+                    'description' => esc_html__( 'URL to the image used as the product banner for low resolution screens within WordPress Admin.', 'license-manager-for-woocommerce' ),
+                    'value'       => $productBannerLowUrl,
+                    'desc_tip'    => true
+                )
+            );
+
+            woocommerce_wp_text_input(
+                array(
+                    'id'          => 'lmfwc_licensed_product_banner_high_url',
+                    'label'       => esc_html__( 'Product banner (high resolution)', 'license-manager-for-woocommerce' ),
+                    'description' => esc_html__( 'URL to the image used as the product banner for high resolution screens within WordPress Admin.', 'license-manager-for-woocommerce' ),
+                    'value'       => $productBannerHighUrl,
+                    'desc_tip'    => true
+                )
+            );
+
             ?>
             <div class="form-field lmfwc_licensed_product_changelog">
                 <label><?php esc_html_e( 'Product changelog', 'license-manager-for-woocommerce' ) ?></label>
@@ -324,6 +358,21 @@ class ProductData
 
         update_post_meta( $postId, 'lmfwc_licensed_product_requires_php', $productRequiresPhp );
 
+        // Update the product icon url according to the field.
+        $productIconUrl = sanitize_text_field( wp_unslash( $_POST['lmfwc_licensed_product_icon_url'] ) );
+
+        update_post_meta( $postId, 'lmfwc_licensed_product_icon_url', $productIconUrl );
+
+        // Update the product banner_low url according to the field.
+        $productBannerLowUrl = sanitize_text_field( wp_unslash( $_POST['lmfwc_licensed_product_banner_low_url'] ) );
+
+        update_post_meta( $postId, 'lmfwc_licensed_product_banner_low_url', $productBannerLowUrl );
+
+        // Update the product banner url according to the field.
+        $productBannerHighUrl = sanitize_text_field( wp_unslash( $_POST['lmfwc_licensed_product_banner_high_url'] ) );
+
+        update_post_meta( $postId, 'lmfwc_licensed_product_banner_high_url', $productBannerHighUrl );
+
         // Update the product changelog according to the field.
         $productChangelog = wp_unslash( $_POST['lmfwc_licensed_product_changelog'] );
 
@@ -342,20 +391,23 @@ class ProductData
     public function variableProductDataPanel($loop, $variationData, $variation)
     {
         /** @var GeneratorResourceModel[] $generators */
-        $generators         = GeneratorResourceRepository::instance()->findAll();
-        $productId          = $variation->ID;
-        $licensed           = get_post_meta($productId, 'lmfwc_licensed_product',                    true);
-        $deliveredQuantity  = get_post_meta($productId, 'lmfwc_licensed_product_delivered_quantity', true);
-        $generatorId        = get_post_meta($productId, 'lmfwc_licensed_product_assigned_generator', true);
-        $useGenerator       = get_post_meta($productId, 'lmfwc_licensed_product_use_generator',      true);
-        $useStock           = get_post_meta($productId, 'lmfwc_licensed_product_use_stock',          true);
-        $productVersion     = get_post_meta($productId, 'lmfwc_licensed_product_version',            true);
-        $productTested      = get_post_meta($productId, 'lmfwc_licensed_product_tested',             true);
-        $productRequires    = get_post_meta($productId, 'lmfwc_licensed_product_requires',           true);
-        $productRequiresPhp = get_post_meta($productId, 'lmfwc_licensed_product_requires_php',       true);
-        $productChangelog   = get_post_meta($productId, 'lmfwc_licensed_product_changelog',          true);
-        $generatorOptions   = array('' => __('Please select a generator', 'license-manager-for-woocommerce'));
-        $licenseStockCount  = LicenseResourceRepository::instance()->countBy(
+        $generators           = GeneratorResourceRepository::instance()->findAll();
+        $productId            = $variation->ID;
+        $licensed             = get_post_meta($productId, 'lmfwc_licensed_product',                    true);
+        $deliveredQuantity    = get_post_meta($productId, 'lmfwc_licensed_product_delivered_quantity', true);
+        $generatorId          = get_post_meta($productId, 'lmfwc_licensed_product_assigned_generator', true);
+        $useGenerator         = get_post_meta($productId, 'lmfwc_licensed_product_use_generator',      true);
+        $useStock             = get_post_meta($productId, 'lmfwc_licensed_product_use_stock',          true);
+        $productVersion       = get_post_meta($productId, 'lmfwc_licensed_product_version',            true);
+        $productTested        = get_post_meta($productId, 'lmfwc_licensed_product_tested',             true);
+        $productRequires      = get_post_meta($productId, 'lmfwc_licensed_product_requires',           true);
+        $productRequiresPhp   = get_post_meta($productId, 'lmfwc_licensed_product_requires_php',       true);
+        $productChangelog     = get_post_meta($productId, 'lmfwc_licensed_product_changelog',          true);
+        $productIconUrl       = get_post_meta($productId, 'lmfwc_licensed_product_icon_url',           true);
+        $productBannerLowUrl  = get_post_meta($productId, 'lmfwc_licensed_product_banner_low_url',     true);
+        $productBannerHighUrl = get_post_meta($productId, 'lmfwc_licensed_product_banner_high_url',    true);
+        $generatorOptions     = array('' => __('Please select a generator', 'license-manager-for-woocommerce'));
+        $licenseStockCount    = LicenseResourceRepository::instance()->countBy(
             array(
                 'product_id' => $productId,
                 'status' => LicenseStatus::ACTIVE
@@ -505,6 +557,40 @@ class ProductData
                     'desc_tip'    => true
                 )
             );
+
+            woocommerce_wp_text_input(
+                array(
+                    'id'          => "lmfwc_licensed_product_icon_url_{$productId}",
+                    'name'        => "lmfwc_licensed_product_icon_url[{$productId}]",
+                    'label'       => esc_html__( 'Product icon', 'license-manager-for-woocommerce' ),
+                    'description' => esc_html__( 'URL to the image used as the product icon within WordPress Admin.', 'license-manager-for-woocommerce' ),
+                    'value'       => $productIconUrl,
+                    'desc_tip'    => true
+                )
+            );
+
+            woocommerce_wp_text_input(
+                array(
+                    'id'          => "lmfwc_licensed_product_banner_low_url_{$productId}",
+                    'name'        => "lmfwc_licensed_product_banner_low_url[{$productId}]",
+                    'label'       => esc_html__( 'Product banner (low resolution)', 'license-manager-for-woocommerce' ),
+                    'description' => esc_html__( 'URL to the image used as the product banner for low resolution screens within WordPress Admin.', 'license-manager-for-woocommerce' ),
+                    'value'       => $productBannerLowUrl,
+                    'desc_tip'    => true
+                )
+            );
+
+            woocommerce_wp_text_input(
+                array(
+                    'id'          => "lmfwc_licensed_product_banner_high_url_{$productId}",
+                    'name'        => "lmfwc_licensed_product_banner_high_url[{$productId}]",
+                    'label'       => esc_html__( 'Product banner (high resolution)', 'license-manager-for-woocommerce' ),
+                    'description' => esc_html__( 'URL to the image used as the product banner for high resolution screens within WordPress Admin.', 'license-manager-for-woocommerce' ),
+                    'value'       => $productBannerHighUrl,
+                    'desc_tip'    => true
+                )
+            );
+
             ?>
             <div class="form-field lmfwc_licensed_product_changelog">
                 <label><?php esc_html_e( 'Product changelog', 'license-manager-for-woocommerce' ) ?></label>
@@ -514,8 +600,6 @@ class ProductData
             
             echo '</div>';
         }
-        // echo '</div></div>';
-
     }
 
     /**
@@ -597,6 +681,21 @@ class ProductData
             $productRequiresPhp = sanitize_text_field( wp_unslash( $_POST['lmfwc_licensed_product_requires_php'][$variationId] ) );
 
             update_post_meta( $variationId, 'lmfwc_licensed_product_requires_php', $productRequiresPhp );
+            
+            // Update the product icon url according to the field.
+            $productIconUrl = sanitize_text_field( wp_unslash( $_POST['lmfwc_licensed_product_icon_url'][$variationId] ) );
+
+            update_post_meta( $variationId, 'lmfwc_licensed_product_icon_url', $productIconUrl );
+
+            // Update the product banner_low url according to the field.
+            $productBannerLowUrl = sanitize_text_field( wp_unslash( $_POST['lmfwc_licensed_product_banner_low_url'][$variationId] ) );
+
+            update_post_meta( $variationId, 'lmfwc_licensed_product_banner_low_url', $productBannerLowUrl );
+
+            // Update the product banner url according to the field.
+            $productBannerHighUrl = sanitize_text_field( wp_unslash( $_POST['lmfwc_licensed_product_banner_high_url'][$variationId] ) );
+
+            update_post_meta( $variationId, 'lmfwc_licensed_product_banner_high_url', $productBannerHighUrl );
 
             // Update the product changelog according to the field.
             $productChangelog = wp_unslash( $_POST["lmfwc_licensed_product_changelog_{$variationId}"] );

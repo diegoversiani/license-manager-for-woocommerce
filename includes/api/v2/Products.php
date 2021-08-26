@@ -192,6 +192,24 @@ class Products extends LMFWC_REST_Controller {
             )
         );
 
+        if ( $product->get_meta('lmfwc_licensed_product_icon_url') ) {
+            $updateData[ 'icons' ] = array(
+                'default' => $product->get_meta('lmfwc_licensed_product_icon_url'),
+            );
+        }
+
+        if ( $product->get_meta('lmfwc_licensed_product_banner_low_url') || $product->get_meta('lmfwc_licensed_product_banner_low_url') ) {
+            $updateData[ 'banners' ] = array();
+            
+            if ( $product->get_meta('lmfwc_licensed_product_banner_low_url') ) {
+                $updateData[ 'banners' ][ 'low' ] = $product->get_meta('lmfwc_licensed_product_banner_low_url');
+            }
+
+            if ( $product->get_meta('lmfwc_licensed_product_banner_high_url') ) {
+                $updateData[ 'banners' ][ 'high' ] = $product->get_meta('lmfwc_licensed_product_banner_high_url');
+            }
+        }
+
         return $this->response( true, $updateData, 200, 'v2/products/update/{product_id}' );
     }
 
