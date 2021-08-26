@@ -587,6 +587,12 @@ class General
                 'method'     => 'GET',
                 'deprecated' => false,
             ),
+            array(
+                'id'         => '024',
+                'name'       => 'v2/products/get_version/{product_id}',
+                'method'     => 'GET',
+                'deprecated' => false,
+            ),
         );
         $classList = array(
             'GET'  => 'text-success',

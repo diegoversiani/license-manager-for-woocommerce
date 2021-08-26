@@ -47,10 +47,10 @@ class Products extends LMFWC_REST_Controller {
          * Retrieves update information's about a WooCommerce product e.g. a WordPress plugin
          */
         register_rest_route(
-            $this->namespace, $this->rest_base . '/update/(?P<product_id>[\d]+)', array(
+            $this->namespace, $this->rest_base . '/get_version/(?P<product_id>[\d]+)', array(
                 array(
                     'methods'             => WP_REST_Server::READABLE,
-                    'callback'            => array($this, 'checkProductUpdateById'),
+                    'callback'            => array($this, 'getProductVersion'),
                     'permission_callback' => array($this, 'permissionCallback'),
                     'args'                => array(
                         'product_id' => array(
@@ -106,15 +106,15 @@ class Products extends LMFWC_REST_Controller {
     }
 
     /**
-     * Callback for the GET products/update/{product_id} route. Checks if a
-     * product update is available.
+     * Callback for the GET products/get_version/{product_id} route. Gets the information for
+     * the latest version of a product.
      *
      * @param WP_REST_Request $request
      *
      * @return WP_REST_Response|WP_Error
      */
-    public function checkProductUpdateById( WP_REST_Request $request ) {
-        if (!$this->isRouteEnabled($this->settings, '022')) {
+    public function getProductVersion( WP_REST_Request $request ) {
+        if (!$this->isRouteEnabled($this->settings, '024')) {
             return $this->routeDisabledError();
         }
 
@@ -181,7 +181,7 @@ class Products extends LMFWC_REST_Controller {
 
         $updateData = array(
             'url'          => $product->get_permalink(),
-            'new_version'  => $product->get_meta('lmfwc_licensed_product_version'),
+            'version'      => $product->get_meta('lmfwc_licensed_product_version'),
             'package'      => $packageUrl, // Link to download the latest update
             'tested'       => $product->get_meta('lmfwc_licensed_product_tested'), // Testes up to WP version
             'requires'     => $product->get_meta('lmfwc_licensed_product_requires'), // Required WP version
@@ -298,7 +298,7 @@ class Products extends LMFWC_REST_Controller {
         $updateData = array(
             'license_key'  => $license->getDecryptedLicenseKey(),
             'url'          => $product->get_permalink(),
-            'new_version'  => $product->get_meta('lmfwc_licensed_product_version'),
+            'version'      => $product->get_meta('lmfwc_licensed_product_version'),
             'package'      => $packageUrl, // Link to download the latest update
             'tested'       => $product->get_meta('lmfwc_licensed_product_tested'), // Testes up to WP version
             'requires'     => $product->get_meta('lmfwc_licensed_product_requires'), // Required WP version
