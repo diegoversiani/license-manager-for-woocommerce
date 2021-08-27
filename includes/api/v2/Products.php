@@ -47,10 +47,10 @@ class Products extends LMFWC_REST_Controller {
          * Retrieves update information's about a WooCommerce product e.g. a WordPress plugin
          */
         register_rest_route(
-            $this->namespace, $this->rest_base . '/get_version/(?P<product_id>[\d]+)', array(
+            $this->namespace, $this->rest_base . '/update/(?P<product_id>[\d]+)', array(
                 array(
                     'methods'             => WP_REST_Server::READABLE,
-                    'callback'            => array($this, 'getProductVersion'),
+                    'callback'            => array($this, 'checkProductUpdateProductId'),
                     'permission_callback' => array($this, 'permissionCallback'),
                     'args'                => array(
                         'product_id' => array(
@@ -113,7 +113,7 @@ class Products extends LMFWC_REST_Controller {
      *
      * @return WP_REST_Response|WP_Error
      */
-    public function getProductVersion( WP_REST_Request $request ) {
+    public function checkProductUpdateProductId( WP_REST_Request $request ) {
         if (!$this->isRouteEnabled($this->settings, '024')) {
             return $this->routeDisabledError();
         }
