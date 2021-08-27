@@ -106,7 +106,7 @@ class Products extends LMFWC_REST_Controller {
     }
 
     /**
-     * Callback for the GET products/get_version/{product_id} route. Gets the information for
+     * Callback for the GET products/update/{product_id} route. Gets the information for
      * the latest version of a product.
      *
      * @param WP_REST_Request $request

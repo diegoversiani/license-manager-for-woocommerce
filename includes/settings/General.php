@@ -582,14 +582,14 @@ class General
                 'deprecated' => false,
             ),
             array(
-                'id'         => '023',
-                'name'       => 'v2/products/download/latest/{license_key}',
+                'id'         => '024',
+                'name'       => 'v2/products/update/{product_id}',
                 'method'     => 'GET',
                 'deprecated' => false,
             ),
             array(
-                'id'         => '024',
-                'name'       => 'v2/products/get_version/{product_id}',
+                'id'         => '023',
+                'name'       => 'v2/products/download/latest/{license_key}',
                 'method'     => 'GET',
                 'deprecated' => false,
             ),
