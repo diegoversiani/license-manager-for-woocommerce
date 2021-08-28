@@ -126,9 +126,9 @@ class Products extends LMFWC_REST_Controller {
             );
         }
 
-        $product_id = sanitize_text_field($request->get_param('product_id'));
+        $productId = sanitize_text_field($request->get_param('product_id'));
 
-        if (!$product_id) {
+        if (!$productId) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
                 'Product ID invalid.',
@@ -136,21 +136,29 @@ class Products extends LMFWC_REST_Controller {
             );
         }
 
-        // $productId = $license->getProductId();
-        $productId = intval( $product_id );
+        $productId = intval( $productId );
 
-        if (!$productId) {
+        if ( ! $productId ) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
-                'No product assigned to license.',
+                'Product not found.',
                 array('status' => 404)
             );
         }
 
-        $product             = wc_get_product($productId);
-        $productDownloads    = $product->get_downloads();
+        $product = wc_get_product( $productId );
 
-        if (!empty( $productDownloads)) {
+        if ( ! $product ) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                'Product not found.',
+                array('status' => 404)
+            );
+        }
+
+        $productDownloads = $product->get_downloads();
+
+        if ( ! empty( $productDownloads ) ) {
             $productDownloadFile = ABSPATH . ltrim(wp_make_link_relative($product->get_file_download_path(lmfwc_array_key_first($productDownloads))), '/');
 
             if (file_exists($productDownloadFile)) {
