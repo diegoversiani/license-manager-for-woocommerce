@@ -208,8 +208,6 @@ class ProductData
             $wrapperClass['lmfwc_subscription_renewal_custom_period']   .= ' hidden';
         }
 
-        //echo '</div><div class="options_group">';
-
         // Dropdown "lmfwc_subscription_renewal_action"
         woocommerce_wp_select(
             array(
@@ -241,8 +239,6 @@ class ProductData
                 'value' => $renewalIntervalType
             )
         );
-
-        echo '<div>';
 
         // Number "lmfwc_subscription_renewal_custom_interval"
         woocommerce_wp_text_input(
@@ -279,8 +275,6 @@ class ProductData
                 'value' => $customPeriod
             )
         );
-
-        echo '</div>';
     }
 
     /**
