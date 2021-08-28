@@ -13,6 +13,7 @@ use LicenseManagerForWooCommerce\Interfaces\IntegrationController as Integration
 use LicenseManagerForWooCommerce\Models\Resources\Generator as GeneratorResourceModel;
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
 use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
+use LicenseManagerForWooCommerce\Settings as LicenseManagerSettings;
 use WC_Order;
 use WC_Order_Item_Product;
 use WC_Product_Simple;
@@ -51,6 +52,11 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         new ProductData();
         new Settings();
         new MyAccount();
+
+        // Bail if feature is disabled
+        if ( LicenseManagerSettings::get( 'lmfwc_product_downloads' ) ) {
+            new ProductDataWordPress();
+        }
     }
 
     /**
