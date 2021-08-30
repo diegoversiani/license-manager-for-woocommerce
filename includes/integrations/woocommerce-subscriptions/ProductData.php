@@ -92,6 +92,7 @@ class ProductData
                 'class'             => 'lmfwc_subscription_renewal_custom_interval',
                 'wrapper_class'     => $wrapperClass['lmfwc_subscription_renewal_custom_interval'],
                 'label'             => __('Interval', 'license-manager-for-woocommerce'),
+                'default'             => 1,
                 'value'             => $customInterval,
                 'type'              => 'number',
                 'custom_attributes' => array(
@@ -248,6 +249,7 @@ class ProductData
                 'wrapper_class'     => $wrapperClass['lmfwc_subscription_renewal_custom_interval'],
                 'name'              => sprintf('lmfwc_subscription_renewal_custom_interval[%d]', $productId),
                 'label'             => __('Interval', 'license-manager-for-woocommerce'),
+                'default'           => 0,
                 'value'             => $customInterval,
                 'type'              => 'number',
                 'custom_attributes' => array(
