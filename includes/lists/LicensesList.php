@@ -836,6 +836,17 @@ class LicensesList extends WP_List_Table
                 break;
         }
 
+        // Show status as expired
+        $offsetSeconds      = floatval($this->gmtOffset) * 60 * 60;
+        $timestampExpiresAt = strtotime($item['expires_at']) + $offsetSeconds;
+        $timestampNow       = strtotime('now') + $offsetSeconds;
+        if ( $timestampNow > $timestampExpiresAt ) {
+            $status = sprintf(
+                '<div class="lmfwc-status expired"><span class="dashicons dashicons-warning"></span> %s</div>',
+                __('Expired', 'license-manager-for-woocommerce')
+            );
+        }
+
         return $status;
     }
 

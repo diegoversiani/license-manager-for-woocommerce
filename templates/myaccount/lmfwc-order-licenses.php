@@ -18,7 +18,10 @@
  * @version 2.3.0
  */
 
-defined('ABSPATH') || exit; ?>
+defined('ABSPATH') || exit;
+
+use LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
+?>
 
 <h2><?php _e('Related licenses', 'license-manager-for-woocommerce'); ?></h2>
 
@@ -30,7 +33,26 @@ defined('ABSPATH') || exit; ?>
         </tr>
         </thead>
         <tbody>
-        <?php foreach ($row['keys'] as $license): ?>
+        <?php foreach ($row['keys'] as $license):
+            $is_licence_valid = true;
+            $valid_until_str = (new DateTime($license->getExpiresAt()))->format($date_format);
+
+            // License expired
+            $gmtOffset          = get_option('gmt_offset');
+            $offsetSeconds      = floatval($gmtOffset) * 60 * 60;
+            $timestampExpiresAt = strtotime($license->getExpiresAt()) + $offsetSeconds;
+            $timestampNow       = strtotime('now') + $offsetSeconds;
+            if ( $timestampNow > $timestampExpiresAt ) {
+                $valid_until_str = __('Expired', 'license-manager-for-woocommerce');
+                $is_licence_valid = false;
+            }
+
+            // License cancelled
+            if ( $license->getStatus() == LicenseStatusEnum::CANCELLED ) {
+                $valid_until_str = __('Cancelled', 'license-manager-for-woocommerce');
+                $is_licence_valid = false;
+            }
+            ?>
             <tr>
                 <td colspan="<?php echo esc_attr(($license->getExpiresAt()) ? '1' : '2'); ?>">
                     <span class="lmfwc-myaccount-license-key">
@@ -44,8 +66,8 @@ defined('ABSPATH') || exit; ?>
                         try {
                             printf(
                                 '%s <b>%s</b>',
-                                __('Valid until', 'license-manager-for-woocommerce'),
-                                (new DateTime($license->getExpiresAt()))->format($date_format)
+                                $is_licence_valid ? __('Valid until', 'license-manager-for-woocommerce') : '',
+                                $valid_until_str
                             );
                         } catch (Exception $e) {
                         }

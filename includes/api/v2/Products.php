@@ -418,11 +418,28 @@ class Products extends LMFWC_REST_Controller {
             );
         }
 
+        // License cancelled
         if ( $license->getStatus() == LicenseStatusEnum::CANCELLED ) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
                 sprintf(
                     'License Key: %s has been cancelled.',
+                    $licenseKey
+                ),
+                array('status' => 404)
+            );
+        }
+
+        // License expired
+        $gmtOffset          = get_option('gmt_offset');
+        $offsetSeconds      = floatval($gmtOffset) * 60 * 60;
+        $timestampExpiresAt = strtotime($license->getExpiresAt()) + $offsetSeconds;
+        $timestampNow       = strtotime('now') + $offsetSeconds;
+        if ( $timestampNow > $timestampExpiresAt ) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                sprintf(
+                    'License Key: %s has expired.',
                     $licenseKey
                 ),
                 array('status' => 404)
@@ -459,6 +476,9 @@ class Products extends LMFWC_REST_Controller {
                 array('status' => 404)
             );
         }
+
+        // var_dump( 'Download allowed' );
+        // die();
 
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');

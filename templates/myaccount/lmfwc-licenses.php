@@ -22,6 +22,7 @@
  */
 
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
+use LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
 
 defined('ABSPATH') || exit; ?>
 
@@ -64,6 +65,22 @@ defined('ABSPATH') || exit; ?>
                 $times_activated     = $license->getTimesActivated() ? $license->getTimesActivated() : '0';
                 $times_activated_max = $license->getTimesActivatedMax() ? $license->getTimesActivatedMax() : '&infin;';
                 $product             = wc_get_product($license->getProductId());
+
+                $valid_until_str = (new DateTime($license->getExpiresAt()))->format($date_format);
+
+                // License expired
+                $gmtOffset          = get_option('gmt_offset');
+                $offsetSeconds      = floatval($gmtOffset) * 60 * 60;
+                $timestampExpiresAt = strtotime($license->getExpiresAt()) + $offsetSeconds;
+                $timestampNow       = strtotime('now') + $offsetSeconds;
+                if ( $timestampNow > $timestampExpiresAt ) {
+                    $valid_until_str = __('Expired', 'license-manager-for-woocommerce');
+                }
+
+                // License cancelled
+                if ( $license->getStatus() == LicenseStatusEnum::CANCELLED ) {
+                    $valid_until_str = __('Cancelled', 'license-manager-for-woocommerce');
+                }
                 ?>
                 <tr>
                     <td class="lmfwc-myaccount-license-key"
@@ -91,7 +108,7 @@ defined('ABSPATH') || exit; ?>
                         <?php
                         if ($license->getExpiresAt()) {
                             try {
-                                printf('<b>%s</b>', (new DateTime($license->getExpiresAt()))->format($date_format));
+                                printf('<b>%s</b>', $valid_until_str);
                             } catch (Exception $e) {
                                 echo esc_html($license->getExpiresAt());
                             }
