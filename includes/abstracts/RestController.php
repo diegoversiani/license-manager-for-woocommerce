@@ -111,6 +111,10 @@ abstract class RestController extends WP_REST_Controller
             return LicenseStatus::DISABLED;
         }
 
+        if (strtoupper($enumerator) === 'CANCELLED') {
+            return LicenseStatus::CANCELLED;
+        }
+
         return $status;
     }
 

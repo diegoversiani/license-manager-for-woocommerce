@@ -6,6 +6,7 @@ use Exception;
 use LicenseManagerForWooCommerce\Abstracts\RestController as LMFWC_REST_Controller;
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
 use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
+use LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -411,6 +412,17 @@ class Products extends LMFWC_REST_Controller {
                 'lmfwc_rest_data_error',
                 sprintf(
                     'License Key: %s could not be found.',
+                    $licenseKey
+                ),
+                array('status' => 404)
+            );
+        }
+
+        if ( $license->getStatus() == LicenseStatusEnum::CANCELLED ) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                sprintf(
+                    'License Key: %s has been cancelled.',
                     $licenseKey
                 ),
                 array('status' => 404)

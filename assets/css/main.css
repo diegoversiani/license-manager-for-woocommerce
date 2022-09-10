@@ -205,6 +205,14 @@ table.wp-list-table.lizenzschlssel span.lmfwc-date {
 	color: var(--color-warning);
 }
 
+.lmfwc-status.cancelled {
+	border: 2px solid var(--color-danger);
+	color: var(--color-danger);
+}
+.lmfwc-status.cancelled > span.dashicons {
+	color: var(--color-danger);
+}
+
 .lmfwc-status.activation.done,
 .lmfwc-status.activation.done > span.dashicons {
 	color: var(--color-info);

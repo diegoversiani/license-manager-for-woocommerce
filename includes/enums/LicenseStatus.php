@@ -44,6 +44,13 @@ abstract class LicenseStatus
     const DISABLED = 5;
 
     /**
+     * Enumerator value used for refunded licenses.
+     *
+     * @var int
+     */
+    const CANCELLED = 6;
+
+    /**
      * Available enumerator values.
      *
      * @var array
@@ -53,7 +60,8 @@ abstract class LicenseStatus
         self::DELIVERED,
         self::ACTIVE,
         self::INACTIVE,
-        self::DISABLED
+        self::DISABLED,
+        self::CANCELLED
     );
 
     /**
@@ -66,7 +74,8 @@ abstract class LicenseStatus
         'delivered',
         'active',
         'inactive',
-        'disabled'
+        'disabled',
+        'cancelled'
     );
 
     /**
@@ -79,7 +88,8 @@ abstract class LicenseStatus
         'delivered' => self::DELIVERED,
         'active'    => self::ACTIVE,
         'inactive'  => self::INACTIVE,
-        'disabled'  => self::DISABLED
+        'disabled'  => self::DISABLED,
+        'cancelled'  => self::CANCELLED
     );
 
     /**
@@ -96,7 +106,8 @@ abstract class LicenseStatus
             self::DELIVERED => 'DELIVERED',
             self::ACTIVE    => 'ACTIVE',
             self::INACTIVE  => 'INACTIVE',
-            self::DISABLED  => 'DISABLED'
+            self::DISABLED  => 'DISABLED',
+            self::CANCELLED  => 'CANCELLED'
         );
 
         return $labels[$status];
@@ -129,6 +140,10 @@ abstract class LicenseStatus
             array(
                 'value' => self::DISABLED,
                 'name' => __('Disabled', 'license-manager-for-woocommerce')
+            ),
+            array(
+                'value' => self::CANCELLED,
+                'name' => __('Cancelled', 'license-manager-for-woocommerce')
             )
         );
     }

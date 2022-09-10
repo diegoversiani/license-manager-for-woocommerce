@@ -822,6 +822,12 @@ class LicensesList extends WP_List_Table
                     __('Disabled', 'license-manager-for-woocommerce')
                 );
                 break;
+            case LicenseStatus::CANCELLED:
+                $status = sprintf(
+                    '<div class="lmfwc-status cancelled"><span class="dashicons dashicons-warning"></span> %s</div>',
+                    __('Cancelled', 'license-manager-for-woocommerce')
+                );
+                break;
             default:
                 $status = sprintf(
                     '<div class="lmfwc-status unknown">%s</div>',
