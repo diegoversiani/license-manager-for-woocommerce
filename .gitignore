@@ -1,3 +1,4 @@
+.DS_store
 assets/etc/defuse.txt
 assets/etc/secret.txt
 logs/debug.log
