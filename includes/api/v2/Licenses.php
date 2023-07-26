@@ -651,9 +651,7 @@ class Licenses extends LMFWC_REST_Controller
             return $licenseExpired;
         }
 
-        if (false !== $licenseDisabled = $this->isLicenseDisabled($license)) {
-            return $licenseDisabled;
-        }
+        // CHANGE: Remove checks for disabled licenses
 
         $timesActivated    = null;
         $timesActivatedMax = null;
@@ -774,9 +772,7 @@ class Licenses extends LMFWC_REST_Controller
             return $licenseExpired;
         }
 
-        if (false !== $licenseDisabled = $this->isLicenseDisabled($license)) {
-            return $licenseDisabled;
-        }
+        // CHANGE: Remove checks for disabled licenses
 
         $timesActivated = null;
 
